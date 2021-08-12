@@ -12,10 +12,12 @@ app.use(history());
 
 app.get('/api/products', async (req, res) => {
     const client = await MongoClient.connect(
-      'mongodb://127.0.0.1:27017',
+      process.env.MONGO_USER && process.env.MONGO_PASS
+      ? `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@cluster0.x4slp.mongodb.net/${process.env.MONGO_DBNAME}?retryWrites=true&w=majority`
+      : 'mongodb://127.0.0.1:27017',
       { useNewUrlParser: true, useUnifiedTopology: true}
     );
-    const db = client.db('merchanttdb');
+    const db = client.db(process.env.MONGO_DBNAME ||'merchanttdb');
     const products = await db.collection('products').find({}).toArray();
     res.status(200).json(products);
     client.close();
@@ -24,10 +26,12 @@ app.get('/api/products', async (req, res) => {
 app.get('/api/users/:userId/cart', async (req, res) => {
   const { userId } = req.params
   const client = await MongoClient.connect(
-      'mongodb://127.0.0.1:27017',
+      process.env.MONGO_USER && process.env.MONGO_PASS
+      ? `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@cluster0.x4slp.mongodb.net/${process.env.MONGO_DBNAME}?retryWrites=true&w=majority`
+      : 'mongodb://127.0.0.1:27017',
       { useNewUrlParser: true, useUnifiedTopology: true}
     );
-  const db = client.db('merchanttdb');
+  const db = client.db(process.env.MONGO_DBNAME ||'merchanttdb');
   const user = await db.collection('users').findOne({ id: userId });
   if (!user) return res.status(404).json('User not found!');
   const products = await db.collection('products').find({}).toArray();
@@ -42,10 +46,12 @@ app.get('/api/users/:userId/cart', async (req, res) => {
 app.get('/api/products/:productId', async (req, res) => {
     const { productId } = req.params;
     const client = await MongoClient.connect(
-      'mongodb://127.0.0.1:27017',
+      process.env.MONGO_USER && process.env.MONGO_PASS
+      ? `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@cluster0.x4slp.mongodb.net/${process.env.MONGO_DBNAME}?retryWrites=true&w=majority`
+      : 'mongodb://127.0.0.1:27017',
       { useNewUrlParser: true, useUnifiedTopology: true}
     );
-    const db = client.db('merchanttdb');
+    const db = client.db(process.env.MONGO_DBNAME ||'merchanttdb');
     const product = await db.collection('products').findOne({ id: productId });
     if (product) {
         res.status(200).json(product);
@@ -53,16 +59,18 @@ app.get('/api/products/:productId', async (req, res) => {
         res.status(404).json('Could not find the product!');
     };
     client.close();
-});
-
+    
+  });
 app.post('/api/users/:userId/cart', async (req, res) => {
   const { userId } = req.params;
   const { productId } = req.body;
   const client = await MongoClient.connect(
-      'mongodb://127.0.0.1:27017',
+      process.env.MONGO_USER && process.env.MONGO_PASS
+      ? `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@cluster0.x4slp.mongodb.net/${process.env.MONGO_DBNAME}?retryWrites=true&w=majority`
+      : 'mongodb://127.0.0.1:27017',
       { useNewUrlParser: true, useUnifiedTopology: true}
     );
-  const db = client.db('merchanttdb');
+  const db = client.db(process.env.MONGO_DBNAME ||'merchanttdb');
   await db.collection('users').updateOne({ id: userId }, {
     $addToSet: { cartItems: productId }
   });
@@ -79,10 +87,12 @@ app.post('/api/users/:userId/cart', async (req, res) => {
 app.delete('/api/users/:userId/cart/:productId', async (req, res) => {
   const { userId, productId } = req.params;
   const client = await MongoClient.connect(
-      'mongodb://127.0.0.1:27017',
+      process.env.MONGO_USER && process.env.MONGO_PASS
+      ? `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@cluster0.x4slp.mongodb.net/${process.env.MONGO_DBNAME}?retryWrites=true&w=majority`
+      : 'mongodb://127.0.0.1:27017',
       { useNewUrlParser: true, useUnifiedTopology: true}
     );
-  const db = client.db('merchanttdb');
+  const db = client.db(process.env.MONGO_DBNAME || 'merchanttdb');
   await db.collection('users').updateOne({ id: userId }, {
     $addToSet: { cartItems: productId }
   });
@@ -102,6 +112,6 @@ app.get('*', (req, res) => {
   res.sendFile('dist/index.html');
 });
 
-app.listen(8000, () => {
+app.listen(process.env.PORT || 8000, () => {
     console.log('Server is listening on port: 8000');
 });
