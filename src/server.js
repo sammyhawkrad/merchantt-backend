@@ -109,7 +109,7 @@ app.delete('/api/users/:userId/cart/:productId', async (req, res) => {
 });
 
 app.get('*', (req, res) => {
-  res.sendFile('dist/index.html');
+  res.sendFile('index.html', {root: 'dist'});
 });
 
 app.listen(process.env.PORT || 8000, () => {
