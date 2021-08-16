@@ -1,6 +1,3 @@
-import { createRequire } from "module";
-const require = createRequire(import.meta.url);
-
 import express from 'express';
 import { MongoClient } from "mongodb";
 import history from "connect-history-api-fallback";
