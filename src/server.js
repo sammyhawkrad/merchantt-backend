@@ -2,6 +2,9 @@ import express from 'express';
 import { MongoClient } from "mongodb";
 import history from "connect-history-api-fallback";
 
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+
 const app = express();
 app.use(express.urlencoded({extended: true}));
 app.use(express.json())
